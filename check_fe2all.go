@@ -77,6 +77,7 @@ func readConfig(filename string) Config {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.WithError(err).Fatal("Error opening config file")
+		os.Exit(1)
 	}
 	defer file.Close()
 
@@ -86,6 +87,7 @@ func readConfig(filename string) Config {
 	err = decoder.Decode(&config)
 	if err != nil {
 		log.WithError(err).Fatal("Error decoding config file")
+		os.Exit(1)
 	}
 
 	return config
@@ -107,7 +109,6 @@ func getMonitorIDs(config Config) []string {
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
 	}
 
 	req.Header.Set("Authorization", config.Token)
@@ -116,19 +117,16 @@ func getMonitorIDs(config Config) []string {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
 	}
 	defer resp.Body.Close()
 	// Überprüfen Sie den HTTP-Statuscode
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Error:", resp.Status)
-		os.Exit(1)
 	}
 	// Dekodieren Sie die JSON-Antwort
 	var services []InputService
 	if err := json.NewDecoder(resp.Body).Decode(&services); err != nil {
 		log.Println("Error decoding JSON:", err)
-		os.Exit(1)
 	}
 	// Extrahiere die IDs aus dem Slice von Services
 	var ids []string
@@ -179,22 +177,22 @@ func getAmWeb(config Config) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 	defer resp.Body.Close()
 	// Überprüfen Sie den HTTP-Statuscode
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Error:", resp.Status)
-		os.Exit(1)
+		return
 	}
 	// Dekodieren Sie die JSON-Antwort
 	var amwebs []Amweb
 	if err := json.NewDecoder(resp.Body).Decode(&amwebs); err != nil {
 		log.Println("Error decoding JSON:", err)
-		os.Exit(1)
+		return
 	}
 	if len(amwebs) == 0 {
-		os.Exit(1)
+		return
 	}
 	// Detaillierte Informationen für jede ID abrufen
 	// CheckMK-Ausgabe
@@ -213,7 +211,7 @@ func getcloud(config Config) {
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 
 	req.Header.Set("Authorization", config.Token)
@@ -222,19 +220,19 @@ func getcloud(config Config) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 	defer resp.Body.Close()
 	// Überprüfen Sie den HTTP-Statuscode
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Error:", resp.Status)
-		os.Exit(1)
+		return
 	}
 	// Dekodieren Sie die JSON-Antwort
 	var services []CloudService
 	if err := json.NewDecoder(resp.Body).Decode(&services); err != nil {
 		log.Println("Error decoding JSON:", err)
-		os.Exit(1)
+		return
 	}
 	// Detaillierte Informationen für jede ID abrufen
 	// CheckMK-Ausgabe
@@ -253,7 +251,7 @@ func getstatus(config Config) {
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 
 	req.Header.Set("Authorization", config.Token)
@@ -262,19 +260,19 @@ func getstatus(config Config) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 	defer resp.Body.Close()
 	// Überprüfen Sie den HTTP-Statuscode
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Error:", resp.Status)
-		os.Exit(1)
+		return
 	}
 	// Dekodieren Sie die JSON-Antwort
 	var services Status
 	if err := json.NewDecoder(resp.Body).Decode(&services); err != nil {
 		log.Println("Error decoding JSON:", err)
-		os.Exit(1)
+		return
 	}
 	// CheckMK-Ausgabe
 	fmt.Printf("P \"FE2 Selfstatus\" errors=%d;1;5 %s\n", services.NbrOfLoggedErrors, services.Message)
@@ -286,7 +284,7 @@ func getmqtt(config Config) {
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 
 	req.Header.Set("Authorization", config.Token)
@@ -295,19 +293,19 @@ func getmqtt(config Config) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.WithError(err).Fatal("Error creating HTTP request")
-		os.Exit(1)
+		return
 	}
 	defer resp.Body.Close()
 	// Überprüfen Sie den HTTP-Statuscode
 	if resp.StatusCode != http.StatusOK {
 		log.Println("Error:", resp.Status)
-		os.Exit(1)
+		return
 	}
 	// Dekodieren Sie die JSON-Antwort
 	var services Mqtt
 	if err := json.NewDecoder(resp.Body).Decode(&services); err != nil {
 		log.Println("Error decoding JSON:", err)
-		os.Exit(1)
+		return
 	}
 	defaultstate := 0
 	if services.Defaultbroker == "ERROR" {
