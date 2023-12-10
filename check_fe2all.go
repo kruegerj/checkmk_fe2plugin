@@ -241,7 +241,7 @@ func getcloud(config Config) {
 		if service.State != "OK" {
 			serviceStatus = 1
 		}
-		fmt.Printf("%d \"FE2 Cloud: %s\" myvalue=-\n", serviceStatus, service.Name)
+		fmt.Printf("%d \"FE2 Cloud: %s\" - Status des %s Service in der FE2 Cloud\n", serviceStatus, service.Name, service.Name)
 	}
 }
 
@@ -321,8 +321,8 @@ func getmqtt(config Config) {
 	}
 
 	// CheckMK-Ausgabe
-	fmt.Printf("%d \"FE2 MQTT Defaultbroker\" novalue=-\n", defaultstate)
-	fmt.Printf("%d \"FE2 MQTT Kubernetes\" novalue=-\n", kubernetesstate)
+	fmt.Printf("%d \"FE2 MQTT Defaultbroker\" - Verbindung zum Default Broker\n", defaultstate)
+	fmt.Printf("%d \"FE2 MQTT Kubernetes\" - Verbindung zum Kubernetes Cluster\n", kubernetesstate)
 }
 
 func getinput(config Config) {
@@ -338,6 +338,6 @@ func getinput(config Config) {
 		if detailedInfo.Message == "" {
 			detailedInfo.Message = "No Message available"
 		}
-		fmt.Printf("%d \"FE2 Input: %s\" myvalue=- %s\n", serviceStatus, detailedInfo.Name, detailedInfo.Message)
+		fmt.Printf("%d \"FE2 Input: %s\" - %s\n", serviceStatus, detailedInfo.Name, detailedInfo.Message)
 	}
 }
